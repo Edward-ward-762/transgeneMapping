@@ -1,0 +1,2 @@
+﻿sampleName,bamPath,genomePath,genomeName
+sample1,/path/to/.bamfile,/path/to/genome.fasta,replacement_genome_name

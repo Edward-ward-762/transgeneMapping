@@ -10,6 +10,6 @@ process convertReadsToFastq {
 
     script:
     """
-    samtools $bamPath fastq > '${bamPath.baseName}_clipped.fastq'
+    samtools fastq $bamPath > '${bamPath.baseName}_clipped.fastq'
     """
 }

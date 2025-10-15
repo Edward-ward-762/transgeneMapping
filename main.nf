@@ -14,10 +14,6 @@ workflow{
                             tuple( row.sample_name, row.bamPath, row.genomePath, row.genomeName )
                         }
 
-    sclen_ch=Channel.of(params.sclenLength)
-
-    hclen_ch=Channel.of(params.hclenLength)
-
     filterClipBam_ch=inputData_ch.combine(sclen_ch)
                                 .combine(hclen_ch)
 

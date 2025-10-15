@@ -7,11 +7,6 @@ include { samIndex } from './modules/local/samIndex.nf'
 include { bamCoverage } from './modules/local/bamCoverage.nf'
 include { filterBamRlen } from './modules/local/filterBamRlen.nf'
 
-params.inputFile='inputFile_main_placeholder'
-params.sclenLength='1000'
-params.hclenLength='1000'
-params.rlenLength='400'
-
 workflow{
     inputData_ch=Channel.fromPath(params.inputFile)
                         .splitCsv(header: true)

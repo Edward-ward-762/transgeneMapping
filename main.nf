@@ -20,9 +20,11 @@ workflow{
         filterClipBam_ch.map{ meta, bam -> [meta, bam] }
         )
 
-    //convert_ch=inputData_ch.join(filterBamSclen.out)
+    convert_ch=filterBamSclen.out
 
-    //convertReadsToFastq(convert_ch)
+    convertReadsToFastq(
+        convert_ch.map{ meta, bam -> [meta, bam] }
+        )
 
     //mapReads_ch=inputData_ch.join(convertReadsToFastq.out)
 

@@ -5,14 +5,14 @@ process filterBamSclen {
     publishDir "output/${bamPath.baseName}", mode: 'copy'
 
     input:
-        tuple val(ID), path(bamPath), path(genomePath), val(genomeName)
+        tuple val(meta), path(bamPath)
         
     output:
-        tuple val(ID), path("${bamPath.baseName}_clipped_reads.txt")
+        tuple val(meta), path("${bamPath.baseName}_clipped_reads.bam")
 
     script:
     """
-    samtools view -e 'sclen >= $params.sclenLength || hclen >= $params.hclenLength' $bamPath | cut -f1 | sort | uniq > '${bamPath.baseName}_clipped_reads.txt'
+    samtools view -e 'sclen >= $params.sclenLength || hclen >= $params.hclenLength' $bamPath > '${bamPath.baseName}_clipped_reads.bam'
     """
 
 }

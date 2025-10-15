@@ -11,26 +11,28 @@ workflow{
     inputData_ch=Channel.fromPath(params.inputFile)
                         .splitCsv(header: true)
                         .map { row ->
-                            tuple( row.sample_name, row.bamPath, row.genomePath, row.genomeName )
+                            [[id: row.sample_name,genomePath: row.genomePath,genomeName: row.genomeName],row.bamPath]
                         }
 
     filterClipBam_ch=inputData_ch
-    
-    filterBamSclen(filterClipBam_ch)
 
-    convert_ch=inputData_ch.join(filterBamSclen.out)
+    filterBamSclen(
+        filterClipBam_ch.map{ meta, bam -> [meta, bam] }
+        )
 
-    convertReadsToFastq(convert_ch)
+    //convert_ch=inputData_ch.join(filterBamSclen.out)
 
-    mapReads_ch=inputData_ch.join(convertReadsToFastq.out)
+    //convertReadsToFastq(convert_ch)
 
-    mapReads(mapReads_ch)
+    //mapReads_ch=inputData_ch.join(convertReadsToFastq.out)
 
-    mappedOut_ch=inputData_ch.join(mapReads.out)
+    //mapReads(mapReads_ch)
 
-    samIndex(mappedOut_ch)
+    //mappedOut_ch=inputData_ch.join(mapReads.out)
 
-    bamCoverage(mappedOut_ch)
+    //samIndex(mappedOut_ch)
+
+    //bamCoverage(mappedOut_ch)
 
     //rlen_ch=Channel.of(params.rlenLength)
 

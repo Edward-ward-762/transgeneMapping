@@ -32,10 +32,11 @@ workflow{
         ch_mapReads.map{meta, fq -> meta.genomePath },
         ch_mapReads.map{meta, fq -> meta.genomeName}
         )
-
-    //mappedOut_ch=inputData_ch.join(mapReads.out)
-
-    //samIndex(mappedOut_ch)
+    ch_mappedOut=mapReads.out
+    
+    samIndex(
+        ch_mappedOut.map{ meta,bam -> [meta, bam] }
+        )
 
     //bamCoverage(mappedOut_ch)
 

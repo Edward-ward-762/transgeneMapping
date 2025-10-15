@@ -2,13 +2,11 @@
 
 process samIndex {
     
-    publishDir "output/${bamPath.baseName}", mode: 'copy'
-
     input:
-        tuple val(ID), path(bamPath), path(genomePath), val(genomeName), path(mapBam)
+        tuple val(meta), path(mapBam)
 
     output:
-        path "${mapBam}.bai"
+        tuple val(meta), path("${mapBam}.bai")
     
     script:
     """

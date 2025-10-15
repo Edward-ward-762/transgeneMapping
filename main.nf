@@ -20,15 +20,18 @@ workflow{
         filterClipBam_ch.map{ meta, bam -> [meta, bam] }
         )
 
-    convert_ch=filterBamSclen.out
+    convert_ch = filterBamSclen.out
 
     convertReadsToFastq(
         convert_ch.map{ meta, bam -> [meta, bam] }
         )
+    ch_mapReads = convertReadsToFastq.out
 
-    //mapReads_ch=inputData_ch.join(convertReadsToFastq.out)
-
-    //mapReads(mapReads_ch)
+    mapReads(
+        ch_mapReads.map{meta, fq -> [meta, fq] },
+        ch_mapReads.map{meta, fq -> meta.genomePath },
+        ch_mapReads.map{meta, fq -> meta.genomeName}
+        )
 
     //mappedOut_ch=inputData_ch.join(mapReads.out)
 

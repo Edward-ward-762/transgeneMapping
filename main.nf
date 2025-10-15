@@ -14,9 +14,8 @@ workflow{
                             tuple( row.sample_name, row.bamPath, row.genomePath, row.genomeName )
                         }
 
-    filterClipBam_ch=inputData_ch.combine(sclen_ch)
-                                .combine(hclen_ch)
-
+    filterClipBam_ch=inputData_ch
+    
     filterBamSclen(filterClipBam_ch)
 
     convert_ch=inputData_ch.join(filterBamSclen.out)

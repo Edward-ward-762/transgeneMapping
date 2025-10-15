@@ -2,8 +2,6 @@
 
 process filterBamSclen {
 
-    publishDir "output/${bamPath.baseName}", mode: 'copy'
-
     input:
         tuple val(meta), path(bamPath)
         
@@ -14,5 +12,4 @@ process filterBamSclen {
     """
     samtools view -e 'sclen >= $params.sclenLength || hclen >= $params.hclenLength' $bamPath > '${bamPath.baseName}_clipped_reads.bam'
     """
-
 }

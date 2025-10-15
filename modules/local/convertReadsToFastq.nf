@@ -6,10 +6,10 @@ process convertReadsToFastq {
         tuple val(meta), path(bamPath)
     
     output:
-        tuple val(meta), path("${bamPath.baseName}_clipped.fastq")
+        tuple val(meta), path("${bamPath.baseName}.fastq")
 
     script:
     """
-    samtools fastq $bamPath > '${bamPath.baseName}_clipped.fastq'
+    samtools fastq $bamPath > '${bamPath.baseName}.fastq'
     """
 }

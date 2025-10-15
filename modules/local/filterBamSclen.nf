@@ -10,6 +10,6 @@ process filterBamSclen {
 
     script:
     """
-    samtools view -e 'sclen >= $params.sclenLength || hclen >= $params.hclenLength' $bamPath > '${bamPath.baseName}_clipped_reads.bam'
+    samtools view -h -e 'sclen >= $params.sclenLength || hclen >= $params.hclenLength' $bamPath > '${bamPath.baseName}_clipped_reads.bam'
     """
 }

@@ -54,9 +54,9 @@ workflow{
     //
     // CHANNEL: Filter empty bams
     //
-    ch_mapped_bam_bai = ch_mapped_bam_bai.map{ meta, bam, bai }
-        .filter{ bam -> file(bam).size() >= params.min_bam_size }
-        .view()
+    ch_mapped_bam_bai = ch_mapped_bam_bai.filter { row -> 
+            file(row[1]).size() >= params.min_bam_size 
+            }
 
     //bamCoverage(mappedOut_ch)
 

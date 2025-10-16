@@ -2,17 +2,14 @@
 
 process bamCoverage {
     
-    publishDir "output/${bamPath.baseName}", mode: 'copy'
-
     input: 
-        tuple val(ID), path(bamPath), path(genomePath), val(genomeName), path(mapBam)
+        tuple val(meta), path(mapBam), path(mapBai)
 
     output:
         path "${mapBam.baseName}_coverage.bedgraph"
     
     script:
     """
-    samtools index $mapBam
-    bamCoverage -b $mapBam -of bedgraph -bs 10000 -o "${mapBam.baseName}_coverage.bedgraph"
+    bamCoverage -b $mapBam -of bedgraph -bs $params.bedgraph_bin_size -o "${mapBam.baseName}_coverage.bedgraph"
     """
 }

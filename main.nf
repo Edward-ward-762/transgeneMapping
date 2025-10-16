@@ -58,7 +58,9 @@ workflow{
             file(row[1]).size() >= params.min_bam_size 
             }
 
-    //bamCoverage(mappedOut_ch)
+    bamCoverage(
+        ch_mapped_bam_bai.map{ meta, bam, bai -> [meta, bam, bai] }
+    )
 
     //rlen_ch=Channel.of(params.rlenLength)
 

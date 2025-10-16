@@ -14,7 +14,7 @@ workflow{
                             [[id: row.sample_name,genomePath: row.genomePath,genomeName: row.genomeName],row.bamPath]
                         }
 
-    filterClipBam_ch=inputData_ch
+    filterClipBam_ch = inputData_ch
 
     filterBamSclen(
         filterClipBam_ch.map{ meta, bam -> [meta, bam] }
@@ -28,15 +28,35 @@ workflow{
     ch_mapReads = convertReadsToFastq.out
 
     mapReads(
-        ch_mapReads.map{meta, fq -> [meta, fq] },
-        ch_mapReads.map{meta, fq -> meta.genomePath },
-        ch_mapReads.map{meta, fq -> meta.genomeName}
+        ch_mapReads.map{ meta, fq -> [meta, fq] },
+        ch_mapReads.map{ meta, fq -> meta.genomePath },
+        ch_mapReads.map{ meta, fq -> meta.genomeName}
         )
-    ch_mappedOut=mapReads.out
+    ch_mapped_bam = mapReads.out
     
     samIndex(
-        ch_mappedOut.map{ meta,bam -> [meta, bam] }
+        ch_mapped_bam.map{ meta, bam -> [meta, bam] }
         )
+    ch_mapped_bai = samIndex.out
+
+    //
+    // CHANNEL: Combine BAM and BAI
+    //
+    ch_mapped_bam_bai = ch_mapped_bam
+        .join(ch_mapped_bai, by: [0])
+        .map {
+            meta, bam, bai ->
+                if (bai) {
+                    [ meta, bam, bai ]
+                }
+        }
+
+    //
+    // CHANNEL: Filter empty bams
+    //
+    ch_bam = ch_bam.map{ meta, bam, bai}
+        .filter { file(bam).size() >= params.min_bam_size
+    }.view()
 
     //bamCoverage(mappedOut_ch)
 

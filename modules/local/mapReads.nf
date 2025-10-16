@@ -1,19 +1,19 @@
 #!/usr/bin/env nextflow
 
 process mapReads {
-	
-    publishDir "output/${bamPath.baseName}", mode: 'copy'
 
 	input:
-		tuple val(ID), path(bamPath), path(genomePath), val(genomeName), path(filteredFastq)		
+		tuple val(meta), path(filteredFastq)
+		path(genomePath)
+		val(genomeName)	
 
 	output:
-		tuple val(ID), path("${bamPath.baseName}_mt_${genomeName}.bam")
+		tuple val(meta), path("${filteredFastq.baseName}_mt_${genomeName}.bam")
 
 	script:
 	"""
 	minimap2 -ax map-ont $genomePath $filteredFastq --MD |
 	samtools view -bS |
-	samtools sort -o ${bamPath.baseName}_mt_${genomeName}.bam
+	samtools sort -o ${filteredFastq.baseName}_mt_${genomeName}.bam
 	"""
 }

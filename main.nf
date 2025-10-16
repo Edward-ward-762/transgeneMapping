@@ -1,4 +1,19 @@
 #!/usr/bin/env nextflow
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Transgene mapping
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT LOCAL MODULES/SUBWORKFLOWS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+//
+// MODULEs
+//
 
 include { filterBamSclen } from './modules/local/filterBamSclen.nf'
 include { convertReadsToFastq } from './modules/local/convertReadsToFastq.nf'
@@ -7,40 +22,111 @@ include { samIndex } from './modules/local/samIndex.nf'
 include { bamCoverage } from './modules/local/bamCoverage.nf'
 include { filterBamRlen } from './modules/local/filterBamRlen.nf'
 
-params.inputFile='inputFile_main_placeholder'
-params.sclenLength='1000'
-params.hclenLength='1000'
-params.rlenLength='400'
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    RUN MAIN WORKFLOW
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
 
 workflow{
+
+    //
+    // ****************************
+    //
+    // SECTION: Creating input Channel
+    //
+    // ****************************
+    //
+
     inputData_ch=Channel.fromPath(params.inputFile)
                         .splitCsv(header: true)
                         .map { row ->
-                            tuple( row.sample_name, row.bamPath, row.genomePath, row.genomeName )
+                            [[id: row.sample_name,genomePath: row.genomePath,genomeName: row.genomeName],row.bamPath]
                         }
 
-    sclen_ch=Channel.of(params.sclenLength)
+    //
+    // ****************************
+    //
+    // SECTION: filter alignment for clipped reads
+    //
+    // ****************************
+    //
 
-    hclen_ch=Channel.of(params.hclenLength)
+    //
+    // CHANNEL: create channel from input channel
+    //
 
-    filterClipBam_ch=inputData_ch.combine(sclen_ch)
-                                .combine(hclen_ch)
+    filterClipBam_ch = inputData_ch
 
-    filterBamSclen(filterClipBam_ch)
+    //
+    // MODULE: filter input bam files for clipped bases
+    //
 
-    convert_ch=inputData_ch.join(filterBamSclen.out)
+    filterBamSclen(
+        filterClipBam_ch.map{ meta, bam -> [meta, bam] }
+        )
 
-    convertReadsToFastq(convert_ch)
+    convert_ch = filterBamSclen.out
 
-    mapReads_ch=inputData_ch.join(convertReadsToFastq.out)
+    //
+    // ****************************
+    //
+    // SECTION: Align clipped reads to genome
+    //
+    // ****************************
+    //
 
-    mapReads(mapReads_ch)
+    //
+    // MODULE: Convert filter clipped reads to fastq
+    //
 
-    mappedOut_ch=inputData_ch.join(mapReads.out)
+    convertReadsToFastq(
+        convert_ch.map{ meta, bam -> [meta, bam] }
+        )
+    ch_mapReads = convertReadsToFastq.out
 
-    samIndex(mappedOut_ch)
+    //
+    // MODULE: Align clipped fastqs to genome
+    //
 
-    bamCoverage(mappedOut_ch)
+    mapReads(
+        ch_mapReads.map{ meta, fq -> [meta, fq] },
+        ch_mapReads.map{ meta, fq -> meta.genomePath },
+        ch_mapReads.map{ meta, fq -> meta.genomeName}
+        )
+    ch_mapped_bam = mapReads.out
+    
+    //
+    // MODULE: index genome aligned clipped fastqs
+    //
+
+    samIndex(
+        ch_mapped_bam.map{ meta, bam -> [meta, bam] }
+        )
+    ch_mapped_bai = samIndex.out
+
+    //
+    // CHANNEL: Combine BAM and BAI
+    //
+    ch_mapped_bam_bai = ch_mapped_bam
+        .join(ch_mapped_bai, by: [0])
+        .map {
+            meta, bam, bai ->
+                if (bai) {
+                    [ meta, bam, bai ]
+                }
+        }
+
+    //
+    // CHANNEL: Filter empty bams
+    //
+    ch_mapped_bam_bai = ch_mapped_bam_bai.filter { row -> 
+            file(row[1]).size() >= params.min_bam_size 
+            }
+
+    bamCoverage(
+        ch_mapped_bam_bai.map{ meta, bam, bai -> [meta, bam, bai] }
+    )
 
     //rlen_ch=Channel.of(params.rlenLength)
 
@@ -49,3 +135,9 @@ workflow{
     //filterBamRlen(filterRlenBam_ch)
  
 }
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    END
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/

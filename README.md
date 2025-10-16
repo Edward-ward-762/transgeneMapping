@@ -32,6 +32,8 @@ You can remove the profile line if you wish to run without the docker container.
 The pipeline will handle multiple entries, and process them together, so you can run many samples against the same genome, or the same sample against many genomes as long as each entry has a unique sampleName entry.
 
 ## Proposed developments:
+* Create test dataset to check successful installation
+* Index filtered clipped reads
 * Add input file validation checks
 * Change pipeline to run on nf-core modules
 * Add software version reporting as part of the above

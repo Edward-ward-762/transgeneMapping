@@ -1,24 +1,43 @@
 # transgeneMapping
-Nextflow workflow to identify Oxford nanopore long reads with more than 1000 soft-clipped or hard-clipped bases, extracting the reads and aligning the reads to the genome/fasta file provided. 
+Nextflow workflow to filter aligned Oxford nanopore long reads with soft-clipped or hard-clipped bases (1000 bases or more by default) and align the clipped reads to the genome/fasta file provided. 
 
-I have found success working on the initial BAM alignment files produced by the https://gitlab.com/l.teboul/cas9point4 pipeline. 
+I have found success working from the initial BAM alignment files produced by the https://gitlab.com/l.teboul/cas9point4 pipeline.
 
-Installation guide:
+But you can run this from your own aligned BAM file. If you have reads aligned to a sequence, you can run this on the bam alignment and it will map any reads with clipping to the genome.
+
+## Installation guide:
 The pipeline should be entirely self-contained apart from two dependencies:
 * Nextflow
 * docker
 
-Currently the docker image is hard-coded into the config files, but it aims at a local installation. That needs to be fixed, but I need to upload the docker image first, then I will update the config files to point at a publicly available docker image.
+I have only included support for a docker container, other container methods currently aren't supported. If you don't wish to install docker, then you will need 3 programmes, listed below, and their dependencies installed and added to the path environment variable.
 
-Usage Guide:
+Required programmes without docker:
+* Samtools (version >= 1.19)
+* Minimap2
+* bamCoverage (part of deepTools)
+
+## Usage Guide:
 The input file, an empty example has been provided, expects 4 inputs:
 * sampleName - a unique ID for each sample being analysed
 * bamPath - file path to your bam file you want to extract reads from
 * genomePath - file path to your genome/fasta file you want to align extracted reads to
 * genomeName - string to help you identify what genome you've aligned to
 
+Including in the github repository is a bash script, transgene_mapping.sh, which can be used to run the pipeline.
+It first pulls the latest version of the main repository. Then runs the downloaded pipeline with the default docker profile.
+You will need to change the inputFile parameter to a " " enclosed string of the file path to your sample sheet. eg: "/drive/file.csv"
+You can remove the profile line if you wish to run without the docker container.
+
 The pipeline will handle multiple entries, and process them together, so you can run many samples against the same genome, or the same sample against many genomes as long as each entry has a unique sampleName entry.
 
-To do:
-* Upload docker image
+## Proposed developments:
+* Add input file validation checks
+* Change pipeline to run on nf-core modules
+* Add software version reporting as part of the above
+* Add an initial step to align all the reads in your input Bam file to your genome/fasta
+* Add a final filtering step to remove short genome alignments
+* Include an optional bam file QC step
+* Include an optional initial alignment to your transgene sequence so you can start from fastq/unaligned bam
 * Set up automatic generation of genomeName if none provided
+

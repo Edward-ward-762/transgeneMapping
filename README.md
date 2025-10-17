@@ -34,10 +34,7 @@ The pipeline will handle multiple entries, and process them together, so you can
 
 ## Proposed developments:
 * Create test dataset to check successful installation
-* ~~ Index filtered clipped reads ~~
 * Add input file validation checks
-* ~~ Change pipeline to run on nf-core modules ~~
-* Add software version reporting as part of the above
 * Add an initial step to align all the reads in your input Bam file to your genome/fasta
 * Add a final filtering step to remove short genome alignments
 * Include an optional bam file QC step

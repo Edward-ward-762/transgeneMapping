@@ -13,6 +13,8 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { DUMP_SOFTWARE_VERSIONS } from './modules/local/dump_software_versions.nf'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES
@@ -226,6 +228,13 @@ workflow{
         [[],[]]
     )
     ch_versions     = ch_versions.mix(BAM_COV_CLIP.out.versions)
+
+    //
+    // MODULE: Collect software versions
+    //
+    DUMP_SOFTWARE_VERSIONS (
+        ch_versions.unique().collectFile()
+    )
 
 }
 

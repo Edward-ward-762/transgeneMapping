@@ -31,6 +31,7 @@ include { MINIMAP2_ALIGN as MAP_ALIGN_GENOME    } from './modules/nf-core/minima
 include { SAMTOOLS_INDEX as SAM_INDEX_CLIP_MAP  } from './modules/nf-core/samtools/index/main.nf'
 include { DEEPTOOLS_BAMCOVERAGE as BAM_COV_CLIP } from './modules/nf-core/deeptools/bamcoverage/main.nf'
 include { SAMTOOLS_VIEW as SAM_VIEW_RLEN_FILTER } from './modules/nf-core/samtools/view/main.nf'
+include { DEEPTOOLS_BAMCOVERAGE as BAM_COV_RLEN } from './modules/nf-core/deeptools/bamcoverage/main.nf'
 
 
 /*
@@ -249,7 +250,39 @@ workflow{
         [],
         'bai'
     )
-    ch_versions    = ch_versions.mix(SAM_VIEW_RLEN_FILTER.out.versions)
+    ch_versions      = ch_versions.mix(SAM_VIEW_RLEN_FILTER.out.versions)
+    ch_clip_rlen_bam = SAM_VIEW_RLEN_FILTER.out.bam
+    ch_clip_rlen_bai = SAM_VIEW_RLEN_FILTER.out.bai
+
+    //
+    // CHANNEL: Combine BAM and BAI
+    //
+    ch_clip_rlen_bam_bai = ch_clip_rlen_bam
+        .join(ch_clip_rlen_bai, by: [0])
+        .map {
+            meta, bam, bai ->
+                if (bai) {
+                    [ meta, bam, bai ]
+                }
+        }
+
+    //
+    // CHANNEL: Filter empty bams
+    //
+    ch_clip_rlen_bam_bai = ch_clip_rlen_bam_bai.filter { row -> 
+            file(row[1]).size() >= params.min_bam_size 
+            }
+
+    //
+    // MODULE: Create coverage bedgraph
+    //
+
+    BAM_COV_RLEN(
+        ch_clip_rlen_bam_bai.map{ meta, bam, bai -> [meta, bam, bai] },
+        [],
+        [],
+        [[],[]]
+    )
 
 
     //

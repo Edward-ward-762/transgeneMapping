@@ -30,6 +30,7 @@ include { SAMTOOLS_FASTQ as SAM_FQ_CLIP_READS   } from './modules/nf-core/samtoo
 include { MINIMAP2_ALIGN as MAP_ALIGN_GENOME    } from './modules/nf-core/minimap2/align/main.nf'
 include { SAMTOOLS_INDEX as SAM_INDEX_CLIP_MAP  } from './modules/nf-core/samtools/index/main.nf'
 include { DEEPTOOLS_BAMCOVERAGE as BAM_COV_CLIP } from './modules/nf-core/deeptools/bamcoverage/main.nf'
+include { SAMTOOLS_VIEW as SAM_VIEW_RLEN_FILTER } from './modules/nf-core/samtools/view/main.nf'
 
 
 /*
@@ -229,6 +230,36 @@ workflow{
     )
     ch_versions     = ch_versions.mix(BAM_COV_CLIP.out.versions)
 
+
+    //
+    // ****************************
+    //
+    // SECTION: filter aligned clipped reads for alignment length
+    //
+    // ****************************
+    //
+
+    //
+    // MODULE: Filter aligned clipped reads for those with alignment length >= rlenLength parameter
+    //
+
+    SAM_VIEW_RLEN_FILTER(
+        ch_clip_map_bam.map{ meta, bam -> [meta, bam,[]] },
+        [[],[]],
+        [],
+        'bai'
+    )
+    ch_versions    = ch_versions.mix(SAM_VIEW_RLEN_FILTER.out.versions)
+
+
+    //
+    // ****************************
+    //
+    // SECTION: Software version dump
+    //
+    // ****************************
+    //
+
     //
     // MODULE: Collect software versions
     //
@@ -236,15 +267,6 @@ workflow{
         ch_versions.unique().collectFile()
     )
 
-}
-
-/*
-    //rlen_ch=Channel.of(params.rlenLength)
-
-    //filterRlenBam_ch=mappedOut_ch.combine(rlen_ch)
-    
-    //filterBamRlen(filterRlenBam_ch)
- 
 }
 
 /*

@@ -27,6 +27,7 @@ The input file, an empty example has been provided, expects 4 inputs:
 Including in the github repository is a bash script, transgene_mapping.sh, which can be used to run the pipeline.
 It first pulls the latest version of the main repository. Then runs the downloaded pipeline with the default docker profile.
 You will need to change the inputFile parameter to a " " enclosed string of the file path to your sample sheet. eg: "/drive/file.csv"
+
 You can remove the profile line if you wish to run without the docker container.
 
 The pipeline will handle multiple entries, and process them together, so you can run many samples against the same genome, or the same sample against many genomes as long as each entry has a unique sampleName entry.

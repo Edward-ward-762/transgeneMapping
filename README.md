@@ -10,9 +10,9 @@ The pipeline should be entirely self-contained apart from two dependencies:
 * Nextflow
 * docker
 
-I have only included support for a docker container, other container methods currently aren't supported. If you don't wish to install docker, then you will need 3 programmes, listed below, and their dependencies installed and added to the path environment variable.
+I have only tested support for using a docker container, but there are other profiles available which might work for you. If you don't wish to install docker, then you will need 3 programmes, listed below, and their dependencies installed and added to the path environment variable.
 
-Required programmes without docker:
+Required programmes without docker (other container methods unverified):
 * Samtools (version >= 1.19)
 * Minimap2
 * bamCoverage (part of deepTools)
@@ -27,19 +27,15 @@ The input file, an empty example has been provided, expects 4 inputs:
 Including in the github repository is a bash script, transgene_mapping.sh, which can be used to run the pipeline.
 It first pulls the latest version of the main repository. Then runs the downloaded pipeline with the default docker profile.
 You will need to change the inputFile parameter to a " " enclosed string of the file path to your sample sheet. eg: "/drive/file.csv"
+
 You can remove the profile line if you wish to run without the docker container.
 
 The pipeline will handle multiple entries, and process them together, so you can run many samples against the same genome, or the same sample against many genomes as long as each entry has a unique sampleName entry.
 
 ## Proposed developments:
 * Create test dataset to check successful installation
-* Index filtered clipped reads
 * Add input file validation checks
-* Change pipeline to run on nf-core modules
-* Add software version reporting as part of the above
 * Add an initial step to align all the reads in your input Bam file to your genome/fasta
 * Add a final filtering step to remove short genome alignments
 * Include an optional bam file QC step
 * Include an optional initial alignment to your transgene sequence so you can start from fastq/unaligned bam
-* Set up automatic generation of genomeName if none provided
-

@@ -13,13 +13,6 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { convertReadsToFastq } from './modules/local/convertReadsToFastq.nf'
-include { mapReads } from './modules/local/mapReads.nf'
-include { samIndex } from './modules/local/samIndex.nf'
-include { bamCoverage } from './modules/local/bamCoverage.nf'
-include { filterBamRlen } from './modules/local/filterBamRlen.nf'
-
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT NF-CORE MODULES
@@ -60,6 +53,7 @@ workflow{
                         }
 
     ch_versions = Channel.empty()
+
 
     //
     // ****************************
@@ -135,6 +129,7 @@ workflow{
         [[],[]]
     )
 
+
     //
     // ****************************
     //
@@ -156,11 +151,6 @@ workflow{
     ch_versions    = ch_versions.mix(SAM_VIEW_CLIP_FILTER.out.versions)
     ch_clipped_bam = SAM_VIEW_CLIP_FILTER.out.bam
 
-    //filterBamSclen(
-    //    filterClipBam_ch.map{ meta, bam -> [meta, bam] }
-    //   )
-
-    //convert_ch = filterBamSclen.out
 
     //
     // ****************************
@@ -181,11 +171,6 @@ workflow{
     ch_versions   = ch_versions.mix(SAM_FQ_CLIP_READS.out.versions)
     ch_clipped_fq = SAM_FQ_CLIP_READS.out.other
 
-    //convertReadsToFastq(
-    //    convert_ch.map{ meta, bam -> [meta, bam] }
-    //    )
-    //ch_mapReads = convertReadsToFastq.out
-
     //
     // MODULE: Align clipped fastqs to genome
     //
@@ -201,13 +186,6 @@ workflow{
     ch_versions     = ch_versions.mix(MAP_ALIGN_GENOME.out.versions)
     ch_clip_map_bam = MAP_ALIGN_GENOME.out.bam 
 
-    //mapReads(
-    //    ch_mapReads.map{ meta, fq -> [meta, fq] },
-    //    ch_mapReads.map{ meta, fq -> meta.genomePath },
-    //    ch_mapReads.map{ meta, fq -> meta.genomeName}
-    //    )
-    //ch_mapped_bam = mapReads.out
-
     //
     // MODULE: index genome aligned clipped fastqs
     //
@@ -217,12 +195,6 @@ workflow{
     )
     ch_versions     = ch_versions.mix(SAM_INDEX_CLIP_MAP.out.versions)
     ch_clip_map_bai = SAM_INDEX_CLIP_MAP.out.bai
-
-
-    //samIndex(
-    //    ch_mapped_bam.map{ meta, bam -> [meta, bam] }
-    //    )
-    //ch_mapped_bai = samIndex.out
 
     //
     // CHANNEL: Combine BAM and BAI
@@ -254,10 +226,6 @@ workflow{
         [[],[]]
     )
     ch_versions     = ch_versions.mix(BAM_COV_CLIP.out.versions)
-
-    //bamCoverage(
-    //    ch_mapped_bam_bai.map{ meta, bam, bai -> [meta, bam, bai] }
-    //)
 
 }
 

@@ -35,7 +35,5 @@ The pipeline will handle multiple entries, and process them together, so you can
 ## Proposed developments:
 * Create test dataset to check successful installation
 * Add input file validation checks
-* Add an initial step to align all the reads in your input Bam file to your genome/fasta
-* Add a final filtering step to remove short genome alignments
 * Include an optional bam file QC step
 * Include an optional initial alignment to your transgene sequence so you can start from fastq/unaligned bam

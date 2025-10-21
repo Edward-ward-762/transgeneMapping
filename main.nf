@@ -132,7 +132,7 @@ workflow{
         [],
         [[],[]]
     )
-
+    ch_versions = ch_versions.mix(DEEPTOOLS_BAMCOVERAGE.out.versions)
 
     //
     // ****************************
@@ -229,7 +229,7 @@ workflow{
         [],
         [[],[]]
     )
-    ch_versions     = ch_versions.mix(BAM_COV_CLIP.out.versions)
+    ch_versions = ch_versions.mix(BAM_COV_CLIP.out.versions)
 
 
     //
@@ -283,7 +283,7 @@ workflow{
         [],
         [[],[]]
     )
-
+    ch_versions = ch_versions.mix(BAM_COV_RLEN.out.versions)
 
     //
     // ****************************

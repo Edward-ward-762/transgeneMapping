@@ -55,7 +55,8 @@ The pipeline will handle multiple entries, and process them together, so you can
   - `move`
   - `rellink`
   - `symlink`
-  For more information regarding how each option will function please consult: https://www.nextflow.io/docs/latest/reference/process.html#publishdir
+
+For more information regarding how each option will function please consult: https://www.nextflow.io/docs/latest/reference/process.html#publishdir
 
 - **`debug`**  
   _Default:_ `false`  

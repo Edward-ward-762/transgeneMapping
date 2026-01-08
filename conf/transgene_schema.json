@@ -1,0 +1,105 @@
+{
+        "inputs": [
+            {
+                "name": "Sample options",
+                "description": "Parameters relating to the sample being analysed.",
+                "advanced": false,
+                "params": {
+                    "inputFile": {
+                        "name": "Samples",
+                        "description": "The samples to process.",
+                        "required": true,
+                        "type": "csv",
+                        "takes_samples": true,
+                        "columns": [
+                            {
+                                "name": "sample_name",
+                                "type": "string",
+                                "from_sample": "name",
+                                "required": true,
+                                "render": false
+                            },
+                            {
+                                "name": "bamPath",
+                                "type": "data",
+                                "required": true,
+                                "render": true,
+                                "data_types": [
+                                    "region_of_interest"
+                                ]
+                            },
+                            {
+                                "name": "genomePath",
+                                "type": "data",
+                                "required": true,
+                                "render": true
+                            },
+                            {
+                                "name": "genomeName",
+                                "type": "string",
+                                "required": true,
+                                "render": false
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "Pipeline parameters",
+                "description": "General options and configuration for the pipeline.",
+                "advanced": true,
+                "params": {
+                    "sclenLength": {
+                        "name": "Soft-clipping length filter",
+                        "description": "Filter for reads with soft-clipping greater than or equal to the value.",
+                        "type": "number",
+                        "default": 1000
+                    },
+                    "hclenLength": {
+                        "name": "Hard-clipping length filter",
+                        "description": "Filter for reads with hard-clipping greater than or equal to the value.",
+                        "type": "number",
+                        "default": 1000
+                    },
+                    "rlenLength": {
+                        "name": "Genome aligned length filter",
+                        "description": "Filter for reads with genome alignment greater than or equal to the value.",
+                        "type": "number",
+                        "default": 1000
+                    },
+                    "min_bam_size": {
+                        "name": "Minimum bam size value",
+                        "description": "Min size in bytes for an empty bam file",
+                        "type": "number",
+                        "default": 500
+                    },
+                    "bedgraph_bin_size": {
+                        "name": "Bedgraph bin size",
+                        "description": "Bin size for genome binning in bases.",
+                        "type": "number",
+                        "default": 10000
+                    }
+                }
+            }
+        ],
+        "outputs": [
+            {
+                "name": "Initial Bam Coverage",
+                "description": "Bam coverage of all reads mapped to provided genome.",
+                "filetype": "coverage",
+                "process": "DEEPTOOLS_BAMCOVERAGE"
+            },
+            {
+                "name": "Clipping filtered Bam Coverage",
+                "description": "Bam coverage of all clipping filtered reads mapped to provided genome.",
+                "filetype": "coverage",
+                "process": "BAM_COV_CLIP"
+            },
+            {
+                "name": "Alignment length filtered Bam Coverage",
+                "description": "Bam coverage of reads with genome alignment greater then rlenLength.",
+                "filetype": "coverage",
+                "process": "BAM_COV_RLEN"
+            }
+        ]
+}

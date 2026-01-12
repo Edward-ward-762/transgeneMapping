@@ -23,19 +23,13 @@
                                 "name": "bamPath",
                                 "type": "data",
                                 "required": true,
-                                "render": true,
-                                "data_types": [
-                                    aligned_bam_file
-                                ]
+                                "render": true
                             },
                             {
                                 "name": "genomePath",
                                 "type": "data",
                                 "required": true,
-                                "render": true,
-                                "data_types": [
-                                    reference_genome
-                                ]
+                                "render": true
                             },
                             {
                                 "name": "genomeName",

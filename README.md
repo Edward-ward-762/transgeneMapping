@@ -7,7 +7,7 @@ But you can run this from your own aligned BAM file. If you have reads aligned t
 
 ## Installation guide:
 The pipeline should be entirely self-contained apart from two dependencies:
-* Nextflow
+* Nextflow (NOTE nextflow version 25.10.5 is the latest supported version)
 * docker
 
 I have only tested support for using a docker container, but there are other profiles available which might work for you. If you don't wish to install docker, then you will need 3 programmes, listed below, and their dependencies installed and added to the path environment variable.
@@ -101,9 +101,3 @@ For more information regarding how each option will function please consult: htt
 - **`bedgraph_bin_size`**
   _Default:_ `10000`
   **Description:** Bin size used when creating bedgraph file. Genome will be split into bins of this size, and the number of reads counted in each bin.
-
-## Proposed developments:
-* Create test dataset to check successful installation
-* Add input file validation checks
-* Include an optional bam file QC step
-* Include an optional initial alignment to your transgene sequence so you can start from fastq/unaligned bam
